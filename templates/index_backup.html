@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINGO GO ACADEMY</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #080c14; color: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .menu-btn { background: #1e293b; border: 1px solid #334155; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        
+        .sidebar-overlay { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.7); display: none; z-index: 999; }
+        .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #0b1329; border-left: 1px solid #1e293b; z-index: 1000; transition: right 0.3s ease; display: flex; flex-direction: column; padding: 15px; }
+        .sidebar.active { right: 0; }
+        .sidebar-overlay.active { display: block; }
+        
+        .sb-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 15px; }
+        .sb-title { color: #3b82f6; font-size: 20px; font-weight: bold; }
+        .sb-close { background: #1e293b; border: 1px solid #334155; color: #fff; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; }
+        
+        .cat-box { margin-bottom: 10px; }
+        .cat-title { background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: #fff; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .levels-list { display: none; padding: 8px 5px; flex-wrap: wrap; gap: 5px; background: #0f172a; border-radius: 0 0 8px 8px; }
+        .levels-list.open { display: flex; }
+        .level-btn { flex: 1; min-width: 40px; text-align: center; padding: 6px; background: #1e293b; border: 1px solid #334155; color: #94a3b8; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; }
+        .level-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+        
+        .sb-footer { margin-top: auto; border-top: 1px solid #1e293b; padding-top: 15px; }
+        .prog-bar { background: #1e293b; height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+        .prog-fill { background: #3b82f6; height: 100%; transition: width 0.3s; }
+        .cert-btn { width: 100%; padding: 12px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: bold; display: block; text-decoration: none; margin-bottom: 10px; border: none; }
+        .cert-locked { background: #1e293b; color: #d4af37; border: 1px solid #d4af37; cursor: not-allowed; }
+        .cert-unlocked { background: linear-gradient(135deg, #d4af37, #aa7c11); color: #000; cursor: pointer; }
+        .logout-btn { width: 100%; padding: 10px; border: 1px solid #ef4444; color: #ef4444; background: transparent; border-radius: 8px; text-align: center; text-decoration: none; display: block; font-size: 13px; font-weight: bold; }
+        
+        .main-content { padding: 15px; flex: 1; max-width: 800px; margin: 0 auto; width: 100%; }
+        .player-container { background: #000; border-radius: 12px; overflow: hidden; position: relative; padding-top: 56.25%; margin-bottom: 15px; border: 1px solid #1e293b; }
+        .player-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: None; }
+        .lesson-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .lesson-card.active { border-color: #3b82f6; background: #1e293b; }
+        .badge-status { font-size: 11px; padding: 4px 8px; border-radius: 4px; }
+        .status-done { background: #22c55e22; color: #22c55e; }
+        .name-input { width: 100%; padding: 8px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; font-size: 11px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <button class="menu-btn" onclick="toggleSidebar()">☰ القائمة الأكاديمية</button>
+        <div style="color: #d4af37; font-weight: bold;">LINGO GO 👑</div>
+    </div>
+
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sb-header">
+            <button class="sb-close" onclick="toggleSidebar()">✕</button>
+            <div class="sb-title">LINGO GO 👑</div>
+        </div>
+
+        <div style="overflow-y: auto; flex: 1;">
+            <div class="cat-box">
+                <div class="cat-title" onclick="toggleCat('cat1')">📁 التأسيس (Lessons) <span>▼</span></div>
+                <div class="levels-list" id="cat1">
+                    {% for l in ['A1','A2','B1','B2','C1','C2'] %}
+                    <a href="/?cat=Lessons&level={{l}}" class="level-btn {% if current_cat=='Lessons' and current_level==l %}active{% endif %}">{{l}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="cat-box">
+                <div class="cat-title" onclick="toggleCat('cat2')">📁 الاستماع (Listening) <span>▼</span></div>
+                <div class="levels-list" id="cat2">
+                    {% for l in ['A1','A2','B1','B2','C1','C2'] %}
+                    <a href="/?cat=Listening&level={{l}}" class="level-btn {% if current_cat=='Listening' and current_level==l %}active{% endif %}">{{l}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="cat-box">
+                <div class="cat-title" onclick="toggleCat('cat3')">📁 اللكنة (Accent) <span>▼</span></div>
+                <div class="levels-list" id="cat3">
+                    {% for l in ['A1','A2','B1','B2','C1','C2'] %}
+                    <a href="/?cat=Accent&level={{l}}" class="level-btn {% if current_cat=='Accent' and current_level==l %}active{% endif %}">{{l}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="cat-box">
+                <div class="cat-title" onclick="toggleCat('cat4')">📁 التظليل (Shadowing) <span>▼</span></div>
+                <div class="levels-list" id="cat4">
+                    {% for l in ['A1','A2','B1','B2','C1','C2'] %}
+                    <a href="/?cat=Shadowing&level={{l}}" class="level-btn {% if current_cat=='Shadowing' and current_level==l %}active{% endif %}">{{l}}</a>
+                    {% endfor %}
+                </div>
+
+                <!-- قسم القصص التفاعلية -->
+                <div class="cat-title" onclick="toggleCat('cat5')">📖 القصص التفاعلية (Stories)</div>
+<div style="display: flex; gap: 4px; flex-wrap: wrap; padding: 8px; background: #0f172a; border-radius: 6px;">
+    <a href="/?cat=Stories&level=A1" style="background:#334155; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:bold;">A1</a>
+    <a href="/?cat=Stories&level=A2" style="background:#334155; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:bold;">A2</a>
+    <a href="/?cat=Stories&level=B1" style="background:#334155; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:bold;">B1</a>
+    <a href="/?cat=Stories&level=B2" style="background:#334155; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:bold;">B2</a>
+    <a href="/?cat=Stories&level=C1" style="background:#334155; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:bold;">C1</a>
+    <a href="/?cat=Stories&level=C2" style="background:#334155; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:bold;">C2</a>
+</div>
+<div style="display:none;' <span>▼</span></div>
+                <div class="cat-panel" id="cat5" style="display:none;">
+                    {% for l in ['A1','A2','B1','B2','C1','C2'] %}
+                        <a href="/?cat=Stories&level={{l}}" class="level-btn {% if current_cat=='Stories' and current_level==l %}active{% endif %}">{{l}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="sb-footer">
+            <form action="/update_student_name" method="POST">
+                <input type="text" name="full_name" class="name-input" value="{{ student_name }}" placeholder="اسمك على الشهادة..." required>
+                <button type="submit" style="width:100%; padding:4px; font-size:10px; background:#1e293b; color:#aaa; border:1px solid #334155; border-radius:4px; margin-bottom:8px; cursor:pointer;">تحديث الاسم</button>
+            </form>
+
+            <div style="font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between;">
+                <span>نسبة الإنجاز:</span>
+                <span style="color: #3b82f6; font-weight: bold;">{{ progress_pct }}%</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" style="width: {{ progress_pct }}%;"></div></div>
+
+            {% if progress_pct >= 100 %}
+                <a href="/certificate" class="cert-btn cert-unlocked">🎓 استلام الشهادة المعتمدة</a>
+            {% else %}
+                <button class="cert-btn cert-locked" disabled>🔒 أكمل الكورس 100% لفتح الشهادة 🔒</button>
+            {% endif %}
+
+            <a href="/logout" class="logout-btn">🚪 تسجيل الخروج</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        {% if lessons %}
+            <div class="player-container">
+                <iframe id="yt-player" src="{{ lessons[0].url }}?enablejsapi=1" allowfullscreen></iframe>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="color: #d4af37; margin: 0;" id="current-title">{{ lessons[0].title }}</h3>
+                <button id="next-btn" onclick="playNextLesson()" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">الدرس التالي ⏭️</button>
+            </div>
+
+            <h4 style="margin-bottom: 10px; color: #94a3b8;">قائمة دروس ({{ current_cat }} - {{ current_level }}):</h4>
+            {% for lesson in lessons %}
+                
+                <div class="lesson-card {% if loop.first %}active{% endif %}" >
+                    <div>
+                        <div style="font-size: 13px; font-weight: bold;">{{ loop.index }}. {{ lesson.title }}</div>
+                    </div>
+                    <div>
+                        <button onclick="playLesson('{{ lesson.url }}', '{{ lesson.title }}', '{{ lesson.id }}')" style="background:#3b82f6; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px;">▶ تشغيل</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 50px; color: #64748b;">
+                <h3>لا توجد دروس حالياً في هذا القسم والمستوى.</h3>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let activeLessonId = "{{ lessons[0].id if lessons else '' }}";
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+        function toggleCat(id) {
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        const lessonsData = {{ lessons | tojson }};
+        let currentIndex = 0;
+
+        function playLesson(url, title, id) {
+            activeLessonId = id;
+            document.getElementById('yt-player').src = url + '?enablejsapi=1&autoplay=1';
+            document.getElementById('current-title').innerText = title;
+            if (Array.isArray(lessonsData)) {
+                currentIndex = lessonsData.findIndex(l => String(l.id) === String(id));
+            }
+        }
+
+        function playNextLesson() {
+            if (Array.isArray(lessonsData) && lessonsData.length > 0) {
+                let nextIdx = (currentIndex + 1) % lessonsData.length;
+                let nextLesson = lessonsData[nextIdx];
+                playLesson(nextLesson.url, nextLesson.title, nextLesson.id);
+            }
+        }
+
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        let currentId = activeLessonId || "{{ lessons[0].id if lessons else '' }}";
+        fetch('/complete_lesson', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'lesson_id=' + encodeURIComponent(currentId)
+        }).then(res => res.json()).then(data => {
+            if (data.status === 'ok') {
+                location.reload();
+            }
+        });
+    }
+}";
+                    fetch('/complete_lesson', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: 'lesson_id=' + encodeURIComponent(currentId)
+                    }).then(res => res.json()).then(data => {
+                        if (data.status === 'ok') {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+            }
+        }
+    </script>
+
+<script>
+function openInteractiveStories() {
+    const mainArea = document.getElementById('lesson-content-area') || document.querySelector('.main-content') || document.body;
+    
+    mainArea.innerHTML = `
+        <div style="background: #1e293b; color: #fff; padding: 20px; border-radius: 12px; margin: 15px 0;">
+            <h3 style="color: #38bdf8; margin-bottom: 10px;">📖 القصص التفاعلية - التدريب على النطق</h3>
+            <p style="font-size: 14px; color: #cbd5e1;">استمع للقصة، ثم سجل صوتك واكتشف طريقة نطقك بالمقارنة مع الفيديو:</p>
+            
+            <div style="margin: 15px 0; border-radius: 8px; overflow: hidden;">
+                <iframe width="100%" height="220" src="https://www.youtube.com/embed/videoseries?list=PLRIIPZitFl23BRhU8k-nhLNMV8WikZTt5" frameborder="0" allowfullscreen></iframe>
+            </div>
+
+            <div style="background: #0f172a; padding: 15px; border-radius: 8px; text-align: center;">
+                <button id="recBtn" onclick="toggleRecording()" style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">🎙️ بدء التسجيل</button>
+                <div style="margin-top: 10px;">
+                    <audio id="audioPlay" controls style="width: 100%; display: none;"></audio>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+let mediaRec, chunks = [];
+async function toggleRecording() {
+    const btn = document.getElementById('recBtn');
+    const audio = document.getElementById('audioPlay');
+    
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRec = new MediaRecorder(stream);
+            chunks = [];
+            mediaRec.ondataavailable = e => chunks.push(e.data);
+            mediaRec.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/wav' });
+                audio.src = URL.createObjectURL(blob);
+                audio.style.display = 'block';
+            };
+            mediaRec.start();
+            btn.innerText = '⏹️ إيقاف التسجيل';
+            btn.style.background = '#ef4444';
+        } catch(err) {
+            alert('يرجى السماح بصلاحيات المايكروفون للتسجيل');
+        }
+    } else {
+        mediaRec.stop();
+        btn.innerText = '🎙️ إعادة التسجيل';
+        btn.style.background = '#22c55e';
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - Lingo Go</title>
+    <style>
+        * { box-sizing: border-box; font-family: sans-serif; margin: 0; padding: 0; }
+        body { background: #0b0f19; color: #fff; padding: 15px; }
+        .box { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        h3 { color: #d4af37; margin-bottom: 10px; font-size: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 5px; }
+        label { display: block; font-size: 11px; color: #94a3b8; margin: 6px 0 3px 0; }
+        input[type="text"], select { width: 100%; padding: 10px; background: #1e293b; border: 1px solid #475569; color: #fff; border-radius: 6px; font-size: 13px; margin-bottom: 6px; }
+        .btn { display: block; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer; text-align: center; text-decoration: none; font-size: 13px; margin-top: 5px; }
+        .btn-green { background: #22c55e; color: #000; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .btn-gold { background: #d4af37; color: #000; }
+        .row { display: flex; gap: 10px; }
+        .row > div { flex: 1; }
+        .flash { background: #22c55e22; color: #22c55e; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h2 style="color: #d4af37; text-align: center; margin-bottom: 15px;">⚙️ لوحة إدارة منصة Lingo Go</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="box">
+        <h3>➕ إضافة درس منفرد</h3>
+        <form action="/admin/add_lesson" method="POST">
+            <div class="row">
+                <div>
+                    <label>القسم:</label>
+                    <select name="category" required>
+                        <option value="Lessons">التأسيس (Lessons)</option>
+                        <option value="Listening">الاستماع (Listening)</option>
+                        <option value="Accent">اللكنة (Accent)</option>
+                        <option value="Shadowing">التظليل (Shadowing)</option>
+                        <option value="Stories">📖 القصص التفاعلية (Stories)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>المستوى:</label>
+                    <select name="level" required>
+                        <option value="A1">A1</option><option value="A2">A2</option>
+                        <option value="B1">B1</option><option value="B2">B2</option>
+                        <option value="C1">C1</option><option value="C2">C2</option>
+                    </select>
+                </div>
+            </div>
+            <label>عنوان الدرس:</label>
+            <input type="text" name="title" placeholder="عنوان الدرس..." required>
+            <label>رابط الفيديو:</label>
+            <input type="text" name="url" placeholder="https://www.youtube.com/watch?v=..." required>
+            <button type="submit" class="btn btn-green">حفظ وإضافة الدرس</button>
+        </form>
+    </div>
+
+    <div class="box">
+        <h3>📥 سحب قائمة تشغيل كاملة (YouTube Playlist)</h3>
+        <form action="/admin/import_playlist" method="POST">
+            <div class="row">
+                <div>
+                    <label>القسم المستهدف:</label>
+                    <select name="category" required>
+                        <option value="Lessons">التأسيس (Lessons)</option>
+                        <option value="Listening">الاستماع (Listening)</option>
+                        <option value="Accent">اللكنة (Accent)</option>
+                        <option value="Shadowing">التظليل (Shadowing)</option>
+                        <option value="Stories">📖 القصص التفاعلية (Stories)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>المستوى المستهدف:</label>
+                    <select name="level" required>
+                        <option value="A1">A1</option><option value="A2">A2</option>
+                        <option value="B1">B1</option><option value="B2">B2</option>
+                        <option value="C1">C1</option><option value="C2">C2</option>
+                    </select>
+                </div>
+            </div>
+            <label>رابط قائمة التشغيل:</label>
+            <input type="text" name="playlist_url" placeholder="https://www.youtube.com/playlist?list=..." required>
+            <button type="submit" class="btn btn-blue">استيراد كل فيديوهات البلايليست</button>
+        </form>
+    </div>
+
+    <div class="box">
+        <h3>🎓 معاينة وطباعة شهادة باسم طالب</h3>
+        <form action="/admin/preview_certificate" method="POST">
+            <label>اسم الطالب على الشهادة:</label>
+            <input type="text" name="preview_name" placeholder="مثال: FARES Mohamed Ali" required>
+            <button type="submit" class="btn btn-gold">👁️ معاينة وطباعة الشهادة</button>
+        </form>
+    </div>
+
+    <a href="/" style="color: #94a3b8; font-size: 12px; text-align: center; display: block; text-decoration: none; margin-top: 10px;">← العودة للمنصة الرئيسية</a>
+</body>
+</html>

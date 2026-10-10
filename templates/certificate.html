@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Proficiency - Lingo Go Academy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Georgia', serif; }
+        body { background: #080a0f; color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 15px; }
+        .cert-card { width: 100%; max-width: 480px; background: linear-gradient(145deg, #0d111a, #05070a); border: 4px solid #d4af37; border-radius: 12px; padding: 25px 20px; text-align: center; box-shadow: 0 0 25px rgba(212, 175, 55, 0.25); position: relative; }
+        .cert-card::before { content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px; border: 1px solid rgba(212, 175, 55, 0.4); pointer-events: none; border-radius: 8px; }
+        .header-title { color: #d4af37; font-size: 22px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+        .sub-title { color: #94a3b8; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
+        .student-name { font-size: 24px; color: #ffffff; font-weight: bold; border-bottom: 2px solid #d4af37; display: inline-block; padding-bottom: 4px; margin-bottom: 15px; letter-spacing: 1px; }
+        .badge { background: linear-gradient(135deg, #d4af37, #aa7c11); color: #080a0f; font-size: 11px; font-weight: bold; padding: 5px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; }
+        .desc { font-size: 11px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border-left: 3px solid #d4af37; text-align: left; }
+        .qr-sec img { width: 85px; height: 85px; background: #fff; padding: 4px; border-radius: 8px; }
+        .cert-id { font-size: 10px; color: #64748b; margin-top: 10px; font-family: monospace; }
+        .actions { margin-top: 15px; display: flex; gap: 10px; width: 100%; max-width: 480px; }
+        .btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; text-decoration: none; text-align: center; border: none; cursor: pointer; }
+        .btn-print { background: #d4af37; color: #080a0f; }
+        .btn-back { background: #1e293b; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="cert-card">
+        <div class="header-title">LINGO GO ACADEMY</div>
+        <div class="sub-title">INTERNATIONAL CERTIFICATE OF PROFICIENCY</div>
+        <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">This is officially presented to</div>
+        <div class="student-name">{{ student_name }}</div>
+        <div><span class="badge">ADVANCED ENGLISH PROFICIENCY (C1 - C2)</span></div>
+        <div class="desc">
+            For successfully mastering the complete English curriculum on Lingo Go Platform, demonstrating high fluency in Spoken Communication, Listening Comprehension, Accent Control, and Shadowing.
+        </div>
+        <div class="qr-sec">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ request.host_url }}verify/{{ cert_id }}" alt="QR Verification">
+        </div>
+        <div class="cert-id">ID: {{ cert_id }} | DATE: {{ issue_date }}</div>
+    </div>
+    <div class="actions">
+        <button onclick="window.print()" class="btn btn-print">🖨️ Print / Save PDF</button>
+        <a href="javascript:history.back()" class="btn btn-back">← Back</a>
+    </div>
+</body>
+</html>

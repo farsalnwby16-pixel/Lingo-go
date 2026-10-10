@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب - Lingo Go</title>
+    <style>
+        * { box-sizing: border-box; font-family: sans-serif; }
+        body { background: #0b0f19; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 25px; width: 100%; max-width: 360px; text-align: center; }
+        h2 { color: #22c55e; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 12px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 8px; font-size: 14px; }
+        button { width: 100%; padding: 12px; background: #22c55e; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        a { color: #94a3b8; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 15px; }
+        .flash { color: #ef4444; font-size: 13px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>حساب جديد 🎓</h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}
+        {% endwith %}
+        <form method="POST">
+            <input type="text" name="full_name" placeholder="الاسم الكامل (للطباعة على الشهادة)" required>
+            <input type="text" name="username" placeholder="اسم المستخدم" required>
+            <input type="password" name="password" placeholder="كلمة المرور" required>
+            <button type="submit">إنشاء الحساب</button>
+        </form>
+        <a href="/login">لديك حساب بالفعل؟ تسجيل الدخول</a>
+    </div>
+</body>
+</html>

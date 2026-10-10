@@ -1,0 +1,12 @@
+
+<script>
+function markWatched(id) {
+    fetch('/mark_watched/' + id, {method: 'POST'})
+    .then(r => r.json())
+    .then(d => {
+        if(d.status === 'success') {
+            document.getElementById('status-' + id).innerHTML = '<b style="color:green;">✔ مكتمل</b>';
+        }
+    });
+}
+</script>
