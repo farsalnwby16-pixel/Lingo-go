@@ -3,12 +3,12 @@ import uuid
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 
-# تحديد مسار القوالب بدقة ليعمل مع Vercel
+# تحديد مسار القوالب بدقة ليعمل مع سيرفر Vercel
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../templates'))
 app = Flask(__name__, template_folder=template_dir)
 app.secret_key = 'lingo_go_permanent_secret_key'
 
-# الربط الثابت والدائم بقاعدة بيانات Neon PostgreSQL
+# الربط الدائم بقاعدة بيانات Neon PostgreSQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://neondb_owner:npg_ZECSXyova0b9@ep-fragrant-firefly-zaojv26y-pooler.c-2.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -28,7 +28,6 @@ class CompletedLesson(db.Model):
 
 with app.app_context():
     db.create_all()
-    # حقن الدروس تلقائياً في القاعدة الدائمة إن كانت فارغة لضمان ظهور المحتوى بكل الأقسام والمستويات
     if Lesson.query.count() == 0:
         categories = ['Lessons', 'Listening', 'Accent', 'Shadowing', 'Stories']
         levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -104,6 +103,3 @@ def certificate():
 def logout():
     session.clear()
     return redirect(url_for('index'))
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
